@@ -91,15 +91,16 @@ class LiquidGlassTabBar extends StatefulWidget {
     this.enableHaptics = true,
     this.maxLabelTextScale = 1.5,
     this.useSafeArea = true,
-  }) : assert(
-         items.length >= GlassMorphGeometry.minItemCount &&
-             items.length <= GlassMorphGeometry.maxItemCount,
-         'LiquidGlassTabBar lays out 2 to 6 tabs',
-       ),
-       assert(
-         selectedIndex >= 0 && selectedIndex < items.length,
-         'selectedIndex must index into items',
-       );
+  });
+
+  /// Whether [items] and [selectedIndex] are within what the bar lays out.
+  /// Checked at mount and update rather than in the constructor so the
+  /// constructor stays usable as `const`.
+  bool get _isValid =>
+      items.length >= GlassMorphGeometry.minItemCount &&
+      items.length <= GlassMorphGeometry.maxItemCount &&
+      selectedIndex >= 0 &&
+      selectedIndex < items.length;
 
   @override
   State<LiquidGlassTabBar> createState() => _LiquidGlassTabBarState();
@@ -140,6 +141,7 @@ class _LiquidGlassTabBarState extends State<LiquidGlassTabBar>
   @override
   void initState() {
     super.initState();
+    assert(widget._isValid, 'LiquidGlassTabBar lays out 2 to 6 tabs');
     _driver = GlassMorphDriver(vsync: this, split: _isSplit);
     _lensDriver = GlassLensDriver(
       vsync: this,
@@ -172,6 +174,8 @@ class _LiquidGlassTabBarState extends State<LiquidGlassTabBar>
   @override
   void didUpdateWidget(covariant LiquidGlassTabBar oldWidget) {
     super.didUpdateWidget(oldWidget);
+    assert(widget._isValid, 'LiquidGlassTabBar lays out 2 to 6 tabs');
+    _lensDriver.enableHaptics = widget.enableHaptics;
     // Guarded: re-issuing the motion on every unrelated rebuild restarts the
     // simulation, which is what used to leave the morph stranded.
     if (oldWidget.layout != widget.layout) _driver.settleTo(split: _isSplit);

@@ -4,6 +4,7 @@ import 'package:flutter_liquid_glass_tab_bar/src/geometry/split_bar_shape.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  _connectedNeckFollowsTheRealBoundary();
   const size = Size(390, 48);
   const inset = GlassMorphGeometry.edgeInset;
   final contentWidth = size.width - 2 * inset;
@@ -87,5 +88,25 @@ void main() {
     expect(ltr.contains(rightProbe), isTrue);
     expect(rtl.contains(leftProbe), isTrue);
     expect(rtl.contains(rightProbe), isFalse);
+  });
+}
+
+void _connectedNeckFollowsTheRealBoundary() {
+  test('connected asymmetric pills grow their neck at the real seam', () {
+    const size = Size(390, 48);
+    const inset = GlassMorphGeometry.edgeInset;
+    // 100 + 230 = 330 leaves a 28pt gap: connected, neck still growing.
+    const shape = GlassSplitBarShape(
+      leadingWidth: 100,
+      trailingWidth: 230,
+      inset: inset,
+    );
+    final path = shape.getOuterPath(
+      Offset.zero & size,
+      textDirection: TextDirection.ltr,
+    );
+    // The seam is at inset + 100 + 14 = 130, not at the centre (195).
+    expect(path.contains(const Offset(130, 24)), isTrue);
+    expect(path.contains(const Offset(195, 1)), isTrue);
   });
 }

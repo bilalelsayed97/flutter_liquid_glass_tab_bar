@@ -51,9 +51,11 @@ class GlassSplitBarShape extends ShapeBorder {
     final outerRadius = math.min(_pillRadius, rect.height / 2);
     final rawGap = math.max(contentWidth - leftWidth - rightWidth, 0.0);
     if (rawGap <= GlassSpec.glassConnectionDistance) {
+      // Both pills stretch to meet, each absorbing half the remaining gap.
       return _connectedPath(
         rect: rect,
-        contentWidth: contentWidth,
+        leftWidth: leftWidth + rawGap / 2,
+        rightWidth: rightWidth + rawGap / 2,
         outerRadius: outerRadius,
         rawGap: rawGap,
       );
@@ -79,22 +81,18 @@ class GlassSplitBarShape extends ShapeBorder {
 
   Path _connectedPath({
     required Rect rect,
-    required double contentWidth,
+    required double leftWidth,
+    required double rightWidth,
     required double outerRadius,
     required double rawGap,
   }) {
     final left = Rect.fromLTWH(
       rect.left + inset,
       rect.top,
-      contentWidth / 2,
+      leftWidth,
       rect.height,
     );
-    final right = Rect.fromLTWH(
-      left.right,
-      rect.top,
-      contentWidth / 2,
-      rect.height,
-    );
+    final right = Rect.fromLTWH(left.right, rect.top, rightWidth, rect.height);
     var path = Path.combine(
       PathOperation.union,
       _pillPath(left, radius: outerRadius),
@@ -107,7 +105,7 @@ class GlassSplitBarShape extends ShapeBorder {
     final bridgeHeight = rect.height * connectionProgress;
     if (bridgeHeight > 0) {
       final bridge = Rect.fromCenter(
-        center: rect.center,
+        center: Offset(left.right, rect.center.dy),
         width: 2 * outerRadius,
         height: bridgeHeight,
       );

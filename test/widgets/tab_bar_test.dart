@@ -175,6 +175,18 @@ void main() {
     });
   });
 
+  testWidgets('the constructor is usable as const', (tester) async {
+    await pumpTabBar(
+      tester,
+      const LiquidGlassTabBar(
+        items: _items,
+        selectedIndex: 0,
+        onSelect: _ignore,
+      ),
+    );
+    expect(find.byType(LiquidGlassTabBar), findsOneWidget);
+  });
+
   testWidgets('uses the fallback glass without Impeller shaders', (
     tester,
   ) async {
@@ -537,3 +549,5 @@ void main() {
     });
   });
 }
+
+void _ignore(int _) {}

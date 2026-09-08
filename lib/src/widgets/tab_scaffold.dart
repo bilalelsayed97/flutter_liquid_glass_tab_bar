@@ -49,50 +49,53 @@ class LiquidGlassTabScaffold extends StatelessWidget {
     this.reduceMotion,
     this.enableHaptics = true,
     this.maxLabelTextScale = 1.5,
-  }) : assert(
-         items.length == tabBuilders.length,
-         'items and tabBuilders must have the same length',
-       );
+  });
 
   @override
-  Widget build(BuildContext context) => Stack(
-    children: [
-      Positioned.fill(
-        // The bar repaints on every frame of its morph. Without this
-        // boundary that dirties the shared layer and drags the whole tab
-        // host into each of those repaints.
-        child: RepaintBoundary(
-          child: LiquidGlassTabScrollReporter(
-            controller: controller,
-            child: GlassSelectedIndexBuilder(
+  Widget build(BuildContext context) {
+    assert(
+      items.length == tabBuilders.length,
+      'items and tabBuilders must have the same length',
+    );
+    return Stack(
+      children: [
+        Positioned.fill(
+          // The bar repaints on every frame of its morph. Without this
+          // boundary that dirties the shared layer and drags the whole tab
+          // host into each of those repaints.
+          child: RepaintBoundary(
+            child: LiquidGlassTabScrollReporter(
               controller: controller,
-              builder: (context, selectedIndex) => LiquidGlassTabHost(
-                selectedIndex: selectedIndex,
-                tabBuilders: tabBuilders,
+              child: GlassSelectedIndexBuilder(
+                controller: controller,
+                builder: (context, selectedIndex) => LiquidGlassTabHost(
+                  selectedIndex: selectedIndex,
+                  tabBuilders: tabBuilders,
+                ),
               ),
             ),
           ),
         ),
-      ),
-      PositionedDirectional(
-        start: 0,
-        end: 0,
-        bottom: 0,
-        child: ListenableBuilder(
-          listenable: controller,
-          builder: (context, _) => LiquidGlassTabBar(
-            items: items,
-            selectedIndex: controller.selectedIndex,
-            layout: controller.layout,
-            onSelect: controller.selectIndex,
-            card: card,
-            theme: theme,
-            reduceMotion: reduceMotion,
-            enableHaptics: enableHaptics,
-            maxLabelTextScale: maxLabelTextScale,
+        PositionedDirectional(
+          start: 0,
+          end: 0,
+          bottom: 0,
+          child: ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) => LiquidGlassTabBar(
+              items: items,
+              selectedIndex: controller.selectedIndex,
+              layout: controller.layout,
+              onSelect: controller.selectIndex,
+              card: card,
+              theme: theme,
+              reduceMotion: reduceMotion,
+              enableHaptics: enableHaptics,
+              maxLabelTextScale: maxLabelTextScale,
+            ),
           ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }

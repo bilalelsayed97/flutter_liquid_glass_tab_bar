@@ -20,7 +20,7 @@ class GlassLensDriver extends ChangeNotifier {
   final AnimationController _surfaceController;
 
   /// Whether a candidate change during a drag ticks the haptic engine.
-  final bool enableHaptics;
+  bool enableHaptics;
 
   int _committedIndex;
   int _candidateIndex;
